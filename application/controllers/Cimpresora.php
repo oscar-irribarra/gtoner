@@ -2,127 +2,130 @@
 
 class Cimpresora extends CI_Controller
 {
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->load->model('mimpresora');
-        $this->load->model('mdepartamento');        
+        $this->load->model('mdepartamento');
+        $this->load->model('mdispositivo');
     }
 
     public function index()
     {
-        $data = array();
-        $data['listaimp'] = $this->mimpresora->getImpresoras();
-
-        $this->load->view('template/header');
-        $this->load->view('vistas_impresora/index', $data);
-        $this->load->view('template/footer');
+        $user = $this->session->userdata('session');
+        if ($user == null) {
+            redirect('/cinicio/login', 'refresh');
+        } else {
+            $this->load->view('template/headerlogeado');
+            ($user[0]->Rol == 1) ? $this->load->view('vistas_impresora/index') : redirect('/cerror/e404', 'refresh');
+            $this->load->view('template/footer');
+        }
     }
 
     public function detalles($id = 0)
     {
-        $this->load->view('template/header');    
-        if($id > 0)
-        { 
-            $data['datos_imp'] = $this->mimpresora->getImpresora($id);  
-            $this->load->view('vistas_impresora/detalles',$data);
-        }
-        else
-        {
-            redirect('cimpresora/index');
-        }
-        $this->load->view('template/footer');
-    }
+        $user = $this->session->userdata('session');
+        if ($user == null) {
+            redirect('/cinicio/login', 'refresh');
+        } else {
 
+            $this->load->view('template/headerlogeado');
+            if ($user[0]->Rol == 1) {
+                if ($id <= 0) {
+                    redirect('cimpresora', 'refresh');
+                }
+
+                $data['detalle_dispositivo'] = $this->mdispositivo->getDispositivo($id);
+
+                if ($data['detalle_dispositivo'] == null) {
+                    redirect('cimpresora', 'refresh');
+                }
+
+                $this->load->view('vistas_impresora/detalles', $data);
+            } else {
+                redirect('/cerror/e404', 'refresh');
+            }
+            $this->load->view('template/footer');
+        }
+    }
+    
     public function getImpresoras()
     {
-      $datos = $this->mimpresora->getImpresoras();
-      echo json_encode($datos);
-    }
-
-    public function crud()
-    {
-        $this->load->view('template/header');
-        $this->load->view('vistas_impresora/crud');
-        $this->load->view('template/footer');
-    }
-
-    public function guardar_impresora()
-	{
-	    $datos['marca'] = $this->input->post('txtMarca');
-	    $datos['modelo'] = $this->input->post('txtModelo');	    
-        $id_imp = $this->mimpresora->guardarImpresora($datos);
-        if($id_imp > 0)
-        {
-            redirect('cimpresora/index');
-        }else{
-            redirect('cimpresora/crud');
-        }   
-    }
-
-    public function gettonerasignado()
-    {
-        $id = $this->input->post('idtoner');
-        $datos = $this->mimpresora->getImpton($id);
+        $id = $this->input->post('idDispositivo');
+        $datos = $this->mimpresora->getImpresoras($id);
         echo json_encode($datos);
     }
 
-    public function asignar_toner()
+    public function guardarImpresora()
     {
-        $datos['idtoner'] = $this->input->post('cbtoner');
-        $datos['idimpresora'] = $this->input->post('txtIdImpresora');
-        
-        $validariomp_ton = $this->mimpresora->getTonerasignado($datos);
+        $datos['iddispositivo'] = $this->input->post('idDispositivo');
+        $datos['serie'] = $this->input->post('serieImpresora');
+        $datos['nfactura'] = $this->input->post('nfacturaImpresora');
+        $datos['fcompra'] = $this->input->post('fechaImpresora');
 
-       if($validariomp_ton == null )
-       {         
-            $this->mimpresora->guardarImpton($datos);  
-           echo "Datos Guardados";   
-        }else
-        { 
-            echo "La impresora ya tiene asignado este toner";
+        $respuesta = $this->mimpresora->guardarImpresora($datos);
+        if ($respuesta > 0) {
+            echo 'Impresora Guardada';
+        } else {
+            echo 'Error, Intente Nuevamente';
+        }
+    }
+    public function actualizarImpresora()
+    {
+        $datos['idimpresora'] = $this->input->post('idImpresora');
+        $datos['iddispositivo'] = $this->input->post('idDispositivo');
+        $datos['serie'] = $this->input->post('serieImpresora');
+        $datos['nfactura'] = $this->input->post('nfacturaImpresora');
+        $datos['fcompra'] = $this->input->post('fechaImpresora');
+
+        $respuesta = $this->mimpresora->actualizarImpresora($datos);
+        if ($respuesta > 0) {
+            echo 'Impresora Guardada';
+        } else {
+            echo 'Error, Intente Nuevamente';
         }
     }
 
-    public function getdatosimpresoras()
+    public function guardarImpDep()
     {
-        $id = $this->input->post('idimpresora');
-        $datos = $this->mimpresora->getDatosimpresora($id);
-        echo json_encode($datos);
-    }
+        $datos['idDepartamento'] = $this->input->post('idDepartamento');
+        $datos['idImpresora'] = $this->input->post('idImpresora');
 
-    public function agregar_impresora()
-	{
-	    $datos['serie'] = $this->input->post('txtserie');
-        $datos['nfactura'] = $this->input->post('txtnfactura');
-	    $datos['fcompra'] = $this->input->post('txtfcompra');	    
-        $datos['idimpresora'] = $this->input->post('txtIdImpresora'); 
-        
-        $id_imp = $this->mimpresora->guardarDatosimpresora($datos);
-        if($id_imp > 0)
-        {
-            echo 'ok';
-        }else{
-            echo 'error';
-        }   
-    }
+        $respuesta = $this->mimpresora->getAsignacionImpDep($datos);
 
-    public function asignar_impdep()
-    {
-        $datos['departamento'] = $this->input->post('cblugardestino');
-        $datos['impresora'] = $this->input->post('txtidimpresora');
-
-        $activa = $this->mimpresora->getImpresoraasignada($datos);
-        
-        if($activa == null)
-        {
-            $this->mimpresora->guardarImpDep($datos); 
-            echo "Datos Guardados";   
-        }else
-        { 
+        if ($respuesta == null) {
+            $this->mimpresora->guardarImpDep($datos);
+            echo "Impresora Asignada";
+        } else {
             echo "La serie introducida ya esta en uso";
         }
     }
-        
-   
+
+    public function getConsumoToner()
+    {
+        $serie = $this->input->post('idserie');
+        $datos = $this->mimpresora->getConsumoToner($serie);
+
+        $data['toner'] = 0;
+        $data['tambor'] = 0;
+        $data['tinta'] = 0;
+        $data['fusor'] = 0;
+
+        foreach ($datos as $valor) {
+            if ($valor['id_toner'] == 1) {
+                $data['toner'] = $data['toner'] + 1;
+            }
+            if ($valor['id_toner'] == 2) {
+                $data['tambor'] = $data['tambor'] + 1;
+            }
+            if ($valor['id_toner'] == 3) {
+                $data['tinta'] = $data['tinta'] + 1;
+            }
+            if ($valor['id_toner'] == 4) {
+                $data['fusor'] = $data['fusor'] + 1;
+            }
+        }
+        echo json_encode($data);
+    }
+
 }

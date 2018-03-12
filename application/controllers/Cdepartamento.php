@@ -2,81 +2,83 @@
 
 class Cdepartamento extends CI_Controller
 {
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->load->model('mdepartamento');
-        $this->load->model('mimpresora');
-    }
-
-    public function index()
-    {
-        $data = array();
-        $data['listadep'] = $this->mdepartamento->getDepartamentos();
-
-        $this->load->view('template/header');
-        $this->load->view('vistas_departamento/index',$data);
-        $this->load->view('template/footer');
     }
 
     public function getDepartamentos()
     {
-      $datos = $this->mdepartamento->getDepartamentos();
-      echo json_encode($datos);
-    }    
-
-    public function crud($id = 0)
-    {   
-        $this->load->view('template/header');
-        
-        if($id > 0)
-        {
-            $data['mensaje'] = '<div class="alert alert-danger" role="alert">Edicion</div>';
-            $this->load->view('vistas_departamento/crud',$data);
-        }
-        else
-        {
-            $data['mensaje'] = '<div class="alert alert-success" role="alert">Nuevo</div>';           
-            $this->load->view('vistas_departamento/crud',$data);  
-        }
-        $this->load->view('template/footer');
+        $datos = $this->mdepartamento->getDepartamentos();
+        echo json_encode($datos);
     }
-    
+
+    public function getDepartamento()
+    {
+        $data['idUbicacion'] = $this->input->post('idUbicacion');
+        $datos = $this->mdepartamento->getDepartamentosUbicacion($data);
+        echo json_encode($datos);
+    }
+
     public function detalles($id = 0)
     {
-        $this->load->view('template/header');    
-        if($id > 0)
-        {
-            $data['datos_dep'] = $this->mdepartamento->getDepartamento($id);
-            $data['imp_dep'] = $this->mdepartamento->getImpDep($id);
-            
-            $this->load->view('vistas_departamento/detalles',$data);
-        }else
-        {
-            redirect('cdepartamento/index');
+        $user = $this->session->userdata('session');
+        if ($user == null) {
+            redirect('/cinicio/login', 'refresh');
+        } else {
+            $this->load->view('template/headerlogeado');
+            if ($user[0]->Rol == 1) {
+                if ($id <= 0) {
+                    redirect('cdepartamento');
+                }
+
+                $data['detalle_departamento'] = $this->mdepartamento->getDepartamento($id);
+
+                if ($data['detalle_departamento'] == null) {
+                    redirect('cdepartamento');
+                }
+
+                $this->load->view('vistas_departamento/detalles', $data);
+
+            } else {
+                redirect('/cerror/e404', 'refresh');
+            }
+            $this->load->view('template/footer');
         }
-        $this->load->view('template/footer');
     }
 
-    public function guardar_departamento()
+    public function getImpDep()
     {
-       $datos['nombre'] = $this->input->post('txtNombre');
-       $datos['lugar'] =  $this->input->post('txtLugar');
-
-       $id_dep = $this->mdepartamento->guardarDepartamento($datos);
-       if($id_dep>0)
-       {
-            redirect('cdepartamento/index');
-       }else
-       {
-            redirect('cdepartamento/crud');
-       }
-    }
-   
-    public function impresoras_asignadas()
-    {
-        $id = $this->input->post('iddep');
+        $id = $this->input->post('idDepartamento');
         $datos = $this->mdepartamento->getImpDep($id);
         echo json_encode($datos);
+    }
+
+    public function guardarDepartamento()
+    {
+        $datos['nombre'] = $this->input->post('nombreDepartamento');
+        $datos['lugar'] = $this->input->post('lugarDepartamento');
+
+        $respuesta = $this->mdepartamento->guardarDepartamento($datos);
+        if ($respuesta > 0) {
+            echo 'Departamento Guardado';
+        } else {
+            echo 'Error, Intente Nuevamente';
+        }
+    }
+
+    public function actualizarDepartamento()
+    {
+        $datos['iddepartamento'] = $this->input->post('idDepartamento');
+        $datos['nombre'] = $this->input->post('nombreDepartamento');
+        $datos['lugar'] = $this->input->post('lugarDepartamento');
+
+        $respuesta = $this->mdepartamento->actualizarDepartamento($datos);
+        if ($respuesta > 0) {
+            echo 'Departamento Actualizado';
+        } else {
+            echo 'Error, Intente Nuevamente';
+        }
     }
 }

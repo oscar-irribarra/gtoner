@@ -13,9 +13,11 @@
   <!-- Bootstrap core CSS -->
   <link href="<?=base_url()?>/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
   <link href="<?=base_url()?>/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.5.1/b-html5-1.5.1/datatables.min.css"/>
-
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/b-1.5.1/b-html5-1.5.1/datatables.min.css"
+  />
   <script src="<?=base_url()?>/js/ie-emulation-modes-warning.js"></script>
+  <link href="<?=base_url()?>/css/jquery.toast.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -29,22 +31,19 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">DESAM</a>
-      </div>
+        <a class="navbar-brand" href="<?=base_url();?>cinicio">Toner</a>
 
+        <!-- <img src="<?php echo base_url('images/logo.png'); ?>" style="height:50px;" /> -->
+      </div>
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-
         <ul class="nav navbar-nav navbar-right">
           <li>
-            <a href="<?=base_url();?>cimpresora">Admin</a>
+            <a href="<?=base_url();?>cinicio/login">Ingresar</a>
           </li>
-
         </ul>
       </div>
       <!-- /.navbar-collapse -->
-
     </div>
   </nav>
-
   <br/>

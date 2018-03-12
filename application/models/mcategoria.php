@@ -2,11 +2,11 @@
 
 class Mcategoria extends CI_Model
 {
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
     }
-   
+
     public function getCategorias()
     {
         $consulta = $this->db->query('SELECT * FROM categoria');

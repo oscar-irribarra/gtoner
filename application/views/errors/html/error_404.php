@@ -1,10 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-?><!DOCTYPE html>
+?>
+<?php
+$ci = new CI_Controller();
+$ci =& get_instance();
+$ci->load->helper('url');
+?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>404 Page Not Found</title>
+<link rel="icon" href="<?=base_url()?>/css/icono.ico">
+<title>404</title>
+
 <style type="text/css">
 
 ::selection { background-color: #E13300; color: white; }
@@ -57,8 +65,8 @@ p {
 </head>
 <body>
 	<div id="container">
-		<h1><?php echo $heading; ?></h1>
-		<?php echo $message; ?>
+		<h1>Pagina no encontrada :(</h1>
+		<p><a href="<?php echo base_url(); ?>">Volver</a></p>
 	</div>
 </body>
 </html>

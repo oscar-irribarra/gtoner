@@ -2,7 +2,7 @@
 
 class Ccategoria extends CI_Controller
 {
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
         $this->load->model('mcategoria');
@@ -10,7 +10,7 @@ class Ccategoria extends CI_Controller
 
     public function getCategorias()
     {
-      $datos = $this->mcategoria->getCategorias();
-      echo json_encode($datos);
-    }    
+        $datos = $this->mcategoria->getCategorias();
+        echo json_encode($datos);
+    }
 }

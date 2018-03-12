@@ -12,8 +12,8 @@
           <a href="<?=base_url()?>ctoner" class="list-group-item list-group-item-action">
             Toner
           </a>
-          <a href="<?=base_url()?>cdepartamento" class="list-group-item list-group-item-action">
-            Departamentos
+          <a href="<?=base_url()?>cubicacion" class="list-group-item list-group-item-action">
+            Lugares
           </a>
           <a href="<?=base_url()?>cpedido" class="list-group-item list-group-item-action">
             Pedidos
@@ -24,73 +24,75 @@
           <a href="<?=base_url()?>csalida" class="list-group-item list-group-item-action">
             Salidas
           </a>
+          <a href="<?=base_url()?>cusuario" class="list-group-item list-group-item-action">
+            Usuarios
+          </a>
         </div>
         <br/>
         <br/>
       </div>
+
       <div class="col-md-10">
-        <div class="box" style="border-style: outset; padding: 10%">
-
-          <div class="box-header with-border">
-          <a href="<?=base_url()?>centrada/crud" class="btn btn-primary pull-right">Nueva Entrada</a>
-            <h4>Entradas</h4>
-            <br/>
-          </div>
-          <div class="form-horizontal">
-            <div class="box-body table-responsive">
-
-              <table class="table table-bordered" id="tbl_entradas">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Toner</th>
-                    
-                    <th>Cantidad</th> 
-                    <th>Fecha</th>                 
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($lista_ent as $x) { ?>
-                  <tr>
-                    <td>
-                      <?php echo $x->IdEntrada;?>
-                    </td>
-                    <td>
-                      <?php echo $x->Modelo;?>
-                    </td>
-                   
-                    <td>
-                      <?php echo $x->Cantidad;?>
-                    </td>   
-                    <td>
-                      <?php echo $x->Fecha;?>
-                    </td>               
-                  </tr>
-                  <?php } ?>
-                </tbody>
-
-              </table>
-            </div>
-            <div class="box-footer">
-
-            </div>
-          </div>
+        <div class="box table-responsive" style="border-style: outset; padding: 10%">
+          <b>Entradas</b>
+          <a href="#" title="Modal Entrada" class="btn btn-primary pull-right" data-toggle="modal"
+        data-target="#modalEntrada" onclick="vaciarModalEntrada()">Nueva Entrada</a>
+          <br/>
+          <br/>
+          <table class="table table-hover" id="tblEntrada">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Toner</th>
+                <th>Cantidad</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+          </table>
         </div>
       </div>
-      <div class="col-md-1"></div>
 
     </div>
-
   </div>
-
 </div>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script type="text/javascript">
-  $(document).ready(function () {
-    var table = $('#tbl_entradas').DataTable({
-      responsive: true,
-      "order": [[ 0, "desc" ]]
-    });
 
-  });
+<div class="modal fade" id="modalEntrada" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">Entrada</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="box table-responsive" style="border-style: outset; padding: 10%">
+                            <form>
+                                <input type="hidden" id="txtidEntrada" value="0" />
+
+                                <label class="control-label" for="cbotoner">Toner: </label>                                
+                                <select class="form-control" required id="cbotoner" name="cboTonerentrada" >
+                                  <option value="" >Seleccione...</option>
+                                </select>
+                                <br/>
+                                <label class="control-label" for="txtcantidad">Cantidad: </label>
+                                <input type="number" class="form-control"  id="txtcantidad" min="1" required placeholder="Min 1">
+
+                                <br/>
+                                               
+                                <br/>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="guardarEntrada" class="btn btn-primary">Guardar</button>
+                        <a type="button" class="btn btn-default" data-dismiss="modal">X</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<script>
+  var baseurl = "<?= base_url();?>";
 </script>

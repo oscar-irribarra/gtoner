@@ -2,94 +2,68 @@
 
 class Mimpresora extends CI_Model
 {
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
     }
-
-    public function guardarImpresora($datos)
+    //Trae las impresoras vinculadas/dependientes de cierto dispositivo $id
+    public function getImpresoras($id)
     {
-        $data = array( 'marca' => $datos['marca'], 'modelo' => $datos['modelo'] );
-        $this->db->insert('impresora',$data);
-       return  $this->db->insert_id(); 
-    }
-
-    public function getImpresoras()
-    {
-       $consulta = $this->db->query('SELECT * FROM impresora');
-       return $consulta->result();
-    }    
-
-    public function getImpresora($id)
-    {
-       $sql = 'SELECT * FROM impresora i WHERE i.idimpresora = ?';
-       $consulta = $this->db->query($sql, array($id));
-       return $consulta->result();
-    }   
-
-    public function getImpresoraasignada($datos)
-    {
-       $sql = 'SELECT * FROM datosimp di WHERE di.iddatosimp = ? AND di.estado = ?';
-       $consulta = $this->db->query($sql, array($datos['impresora'], 1));
-       
-       return $consulta->result();
-    }    
-
-    public function guardarImpton($datos)
-    {
-        $data = array( 'id_impresora' => $datos['idimpresora'], 'id_toner' => $datos['idtoner'] );
-        $this->db->insert('impton',$data);
-       return  $this->db->insert_id(); 
-    }
-
-    public function getImpton($id)
-    {
-        $sql = 'SELECT * FROM impton it 
-        JOIN toner t on it.id_toner = t.idtoner 
-        WHERE it.id_impresora = ?';
-
+        $sql = 'SELECT i.idimpresora, i.serie, i.nfactura, i.fechacompra, i.estado
+                FROM impresora i  WHERE i.id_dispositivo = ?';
         $consulta = $this->db->query($sql, array($id));
         return $consulta->result();
     }
 
-    public function getTonerasignado($datos)
+    //Crud Impresoras
+    public function guardarImpresora($datos)
     {
-        $sql = 'SELECT * FROM impton it WHERE it.id_impresora = ? AND it.id_toner = ?';
-        $consulta = $this->db->query($sql, array($datos['idimpresora'],$datos['idtoner']));
-        return $consulta->result();
-    }
-
-    public function guardarDatosimpresora($datos)
-    {
-        $data = array( 'id_impresora' => $datos['idimpresora'], 'serie' => $datos['serie'], 
-                       'nfactura' => $datos['nfactura'], 'fechacompra' => $datos['fcompra'] );
-        $this->db->insert('datosimp',$data);
-      
+        $data = array('id_dispositivo' => $datos['iddispositivo'], 'serie' => $datos['serie'],
+            'nfactura' => $datos['nfactura'], 'fechacompra' => $datos['fcompra']);
+        $this->db->insert('impresora', $data);
         return $this->db->insert_id();
     }
 
-    public function getDatosimpresora($id)
+    public function actualizarImpresora($datos)
     {
-        $sql = 'SELECT di.iddatosimp, di.serie, di.nfactura, di.fechacompra, di.estado
-                FROM datosimp di 
-                WHERE di.id_impresora = ?';
-        $consulta = $this->db->query($sql, array($id));
-        return $consulta->result();
+        $data = array('serie' => $datos['serie'], 'nfactura' => $datos['nfactura'],
+            'fechacompra' => $datos['fcompra']);
+        $this->db->where('IdImpresora', $datos['idimpresora']);
+        return $this->db->update('impresora', $data);
     }
 
     public function guardarImpDep($datos)
     {
-        $data = array( 'id_datosimp' => $datos['impresora'], 'id_departamento' => $datos['departamento']);
-        $this->db->insert('impdep',$data);   
-        
+        $data = array('id_impresora' => $datos['idImpresora'], 'id_departamento' => $datos['idDepartamento']);
+        $this->db->insert('impdep', $data);
+
         $data2 = array(
-            'estado' => 1
+            'estado' => 1,
         );
-    
-        $this->db->where('iddatosimp', $datos['impresora']);
-        $this->db->update('datosimp', $data2);
-        
-       return $this->db->insert_id();
+
+        $this->db->where('idimpresora', $datos['idImpresora']);
+        $this->db->update('impresora', $data2);
+
+        return $this->db->insert_id();
     }
-   
+
+    public function getAsignacionImpDep($datos)
+    {
+        $sql = 'SELECT * FROM impresora i WHERE i.idimpresora = ? AND i.estado = ?';
+        $consulta = $this->db->query($sql, array($datos['idImpresora'], 1));
+
+        return $consulta->result();
+    }
+
+    public function getConsumoToner($serie)
+    {
+        $sql = 'SELECT p.id_toner as "id_toner" from pedido p
+                JOIN impdep id ON p.id_impdep = id.idimpdep
+                JOIN impresora i ON id.id_impresora = i.idimpresora
+                WHERE i.serie = ? AND p.Estado = 1';
+
+        $consulta = $this->db->query($sql, array($serie));
+        return $consulta->result_array();
+    }
+
 }
